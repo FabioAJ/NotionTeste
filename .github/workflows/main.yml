@@ -1,9 +1,8 @@
 name: Publish Notion website to GitHub Pages
 
 on:
-  # Manual update only.
   workflow_dispatch:
-  
+
 permissions:
   contents: write
 
@@ -16,27 +15,28 @@ jobs:
         with:
           repository: tetracionist/loconotion
           path: loconotion
-          
+
       - name: Checkout this repo
         uses: actions/checkout@v3
         with:
           path: pages_repo
-          
+
       - name: Install Chromium and ChromeDriver
         run: |
-          # Install Chromium
           sudo apt-get update
           sudo apt-get install -y chromium-browser chromium-chromedriver
           chromium-browser --version
           chromedriver --version
-          
+
       - name: Install Loconotion dependencies
         run: pip install -r loconotion/requirements.txt
-        
+
       - name: Run Loconotion
         run: |
-          # Especificando o caminho do Chromium diretamente
+          # Definindo o caminho correto do binário do Chromium
           export CHROME_BIN=/usr/bin/chromium-browser
+          # Garantir que o chromedriver está no caminho correto
+          export PATH=$PATH:/usr/lib/chromium-browser/chromedriver
           python3 loconotion/loconotion --chromedriver /usr/bin/chromedriver "pages_repo/site.toml"
 
       - name: Push to GitHub pages
