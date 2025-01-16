@@ -16,19 +16,33 @@ jobs:
         with:
           repository: tetracionist/loconotion
           path: loconotion
+
       - name: Checkout this repo
         uses: actions/checkout@v3
         with:
           path: pages_repo
-      - name: Download and install chromedriver
-        run: sudo apt install chromium-chromedriver
+
+      - name: Install Chromium and Chromedriver
+        run: |
+          sudo apt update
+          sudo apt install -y chromium-browser chromium-chromedriver
+          sudo ln -s /usr/bin/chromium-browser /usr/bin/google-chrome
+
+      - name: Check Chrome and Chromedriver versions
+        run: |
+          chromium-browser --version
+          chromedriver --version
+
       - name: Install Loconotion dependencies
         run: pip install -r loconotion/requirements.txt
+
       - name: Run Loconotion
         run: |
-          python3 loconotion/loconotion --chromedriver chromedriver "pages_repo/site.toml"
+          python3 loconotion/loconotion --chromedriver /usr/bin/chromedriver "pages_repo/site.toml"
+
       - name: Debug/remove chmod +x deploy
         run: chmod +x pages_repo/deploy.sh
+
       - name: Push to GitHub pages
         run: |
           git config --global user.name "github-actions[bot]"
