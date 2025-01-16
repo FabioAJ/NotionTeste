@@ -39,6 +39,8 @@ jobs:
           ls loconotion
           mkdir -p loconotion/dist/site/seja-bem-vindo-17b6b3d4ad6880e3b3d4d38904a2bcb8notion.site
           touch loconotion/dist/site/seja-bem-vindo-17b6b3d4ad6880e3b3d4d38904a2bcb8notion.site/seja-bem-vindo.html
+          echo "================ PINTO MEDIO ======================"
+          ls loconotion/dist/site/seja-bem-vindo-17b6b3d4ad6880e3b3d4d38904a2bcb8notion.site
           python3 loconotion/loconotion --chromedriver /usr/bin/chromedriver "pages_repo/site.toml"
 
       - name: Deploy to GitHub Pages
