@@ -14,7 +14,7 @@ jobs:
       - name: Checkout loconotion
         uses: actions/checkout@v3
         with:
-          repository: FabioAJ/loconotion
+          repository: tetracionist/loconotion
           path: loconotion
       - name: Checkout this repo
         uses: actions/checkout@v3
