@@ -22,14 +22,17 @@ jobs:
           path: pages_repo
       - name: Install Specific Chrome Version
         run: |
-          # Download a specific version of Chrome (114.0.5735.90, por exemplo)
-          wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_114.0.5735.90-1_amd64.deb
-          sudo apt install -y ./google-chrome-stable_114.0.5735.90-1_amd64.deb
+          # Add Google Chrome repository
+          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+          sudo apt-get update
+          # Install a specific version of Chrome
+          sudo apt-get install -y google-chrome-stable=114.0.5735.90-1
           google-chrome --version
 
       - name: Install Matching ChromeDriver
         run: |
-          # Install ChromeDriver for Chrome 114
+          # Download ChromeDriver for Chrome 114
           wget -N "https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip"
           unzip chromedriver_linux64.zip
           sudo mv chromedriver /usr/local/bin/chromedriver
