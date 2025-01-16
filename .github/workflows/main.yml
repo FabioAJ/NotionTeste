@@ -1,61 +1,36 @@
-name: Publish Notion website to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   workflow_dispatch:
-
-permissions:
-  contents: write
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout loconotion
+      - name: Checkout Loconotion Repo
         uses: actions/checkout@v3
         with:
           repository: tetracionist/loconotion
           path: loconotion
 
-      - name: Checkout this repo
+      - name: Checkout Project Repo
         uses: actions/checkout@v3
         with:
           path: pages_repo
 
+      - name: Install Dependencies
+        run: pip install -r loconotion/requirements.txt
+
       - name: Install Chromium and ChromeDriver
         run: |
           sudo apt-get update
-          sudo apt-get install -y chromium-browser chromium-chromedriver
-          # Verificar versões
-          chromium-browser --version
-          chromedriver --version
-          # Remover versão antiga do chromedriver se necessário
-          sudo rm /usr/bin/chromedriver
-          # Baixar versão correta do chromedriver
-          CHROMIUM_VERSION=$(chromium-browser --version | cut -d ' ' -f 2 | cut -d '.' -f 1,2)
-          CHROMEDRIVER_VERSION=$(curl -sSL https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROMIUM_VERSION})
-          echo "CHROMEDRIVER_VERSION: $CHROMEDRIVER_VERSION"
-          # Baixar e configurar o chromedriver
-          wget https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip
+          sudo apt-get install -y chromium-browser
+          CHROMIUM_VERSION=$(chromium-browser --version | cut -d ' ' -f 2)
+          wget https://chromedriver.storage.googleapis.com/${CHROMIUM_VERSION}/chromedriver_linux64.zip
           unzip chromedriver_linux64.zip
           sudo mv chromedriver /usr/bin/
           chromedriver --version
 
-      - name: Install Loconotion dependencies
-        run: pip install -r loconotion/requirements.txt
-
       - name: Run Loconotion
         run: |
-          # Definir caminho correto do binário do Chromium
-          export CHROME_BIN=/usr/bin/chromium-browser
-          # Garantir que o chromedriver esteja no caminho correto
-          export PATH=$PATH:/usr/bin
-          python3 loconotion/loconotion --chromedriver /usr/bin/chromedriver "pages_repo/site.toml"
-
-      - name: Push to GitHub pages
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          GIT_DEPLOY_DIR=../dist/site \
-          GIT_DEPLOY_BRANCH=gh-pages \
-          GIT_DEPLOY_REPO="https://${{ github.token }}@github.com/${{ github.repository }}.git" ./deploy.sh
-        working-directory: pages_repo
+          export CHROME_BIN=/usr/bin/chromium-browse
