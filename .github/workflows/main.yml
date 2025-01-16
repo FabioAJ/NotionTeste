@@ -1,47 +1,33 @@
-name: Deploy to GitHub Pages
+name: Publish Notion website to GitHub Pages
 
 on:
+  # Manual update only.
   workflow_dispatch:
+  
+permissions:
+  contents: write
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Loconotion Repo
+      - name: Checkout loconotion
         uses: actions/checkout@v3
         with:
           repository: tetracionist/loconotion
           path: loconotion
-
-      - name: Checkout Project Repo
+      - name: Checkout this repo
         uses: actions/checkout@v3
         with:
           path: pages_repo
-
-      - name: Install Dependencies
+      - name: Download and install chromedriver
+        run: sudo apt install chromium-chromedriver
+      - name: Install Loconotion dependencies
         run: pip install -r loconotion/requirements.txt
-
-      - name: Install Chromium and ChromeDriver
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y chromium-browser
-          CHROMIUM_VERSION=$(chromium-browser --version | cut -d ' ' -f 2)
-          # Verifique se a versão do Chromium corresponde ao que é esperado para o ChromeDriver
-          echo "Chromium version: $CHROMIUM_VERSION"
-          CHROMEDRIVER_VERSION=$CHROMIUM_VERSION
-          # Baixando a versão correspondente do ChromeDriver
-          wget https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
-          unzip chromedriver_linux64.zip
-          sudo mv chromedriver /usr/bin/
-          chromedriver --version
-
       - name: Run Loconotion
         run: |
-          export CHROME_BIN=/usr/bin/chromium-browser
-          export PATH=$PATH:/usr/bin
-          python3 loconotion/loconotion --chromedriver /usr/bin/chromedriver "pages_repo/site.toml"
-
-      - name: Deploy to GitHub Pages
+          python3 loconotion/loconotion --chromedriver chromedriver "pages_repo/site.toml"
+      - name: Push to GitHub pages
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
