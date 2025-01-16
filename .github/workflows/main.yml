@@ -25,14 +25,16 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y chromium-browser chromium-chromedriver
-          # Verifica as versões
+          # Verificar versões
           chromium-browser --version
           chromedriver --version
-          # Remove o chromedriver antigo se necessário
+          # Remover versão antiga do chromedriver se necessário
           sudo rm /usr/bin/chromedriver
-          # Baixar a versão compatível do chromedriver
+          # Baixar versão correta do chromedriver
           CHROMIUM_VERSION=$(chromium-browser --version | cut -d ' ' -f 2 | cut -d '.' -f 1,2)
           CHROMEDRIVER_VERSION=$(curl -sSL https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROMIUM_VERSION})
+          echo "CHROMEDRIVER_VERSION: $CHROMEDRIVER_VERSION"
+          # Baixar e configurar o chromedriver
           wget https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip
           unzip chromedriver_linux64.zip
           sudo mv chromedriver /usr/bin/
@@ -43,9 +45,9 @@ jobs:
 
       - name: Run Loconotion
         run: |
-          # Definindo o caminho correto do binário do Chromium
+          # Definir caminho correto do binário do Chromium
           export CHROME_BIN=/usr/bin/chromium-browser
-          # Garantir que o chromedriver está no caminho correto
+          # Garantir que o chromedriver esteja no caminho correto
           export PATH=$PATH:/usr/bin
           python3 loconotion/loconotion --chromedriver /usr/bin/chromedriver "pages_repo/site.toml"
 
