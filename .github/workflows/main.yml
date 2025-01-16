@@ -28,6 +28,8 @@ jobs:
           CHROMIUM_VERSION=$(chromium-browser --version | cut -d ' ' -f 2)
           wget https://storage.googleapis.com/chrome-for-testing-public/132.0.6834.0/linux64/chromedriver-linux64.zip
           unzip chromedriver-linux64.zip
+          ls /usr/bin/
+          ls
           sudo mv chromedriver /usr/bin/
           chromedriver --version
 
