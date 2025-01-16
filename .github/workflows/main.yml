@@ -23,15 +23,31 @@ jobs:
           path: pages_repo
 
       - name: Install Chromium and Chromedriver
-        run: |
-          sudo apt update
-          sudo apt install -y chromium-browser chromium-chromedriver
-          sudo ln -s /usr/bin/chromium-browser /usr/bin/google-chrome
+      run: |
+        # Atualiza os repositórios e instala o Chromium
+        sudo apt update
+        sudo apt install -y chromium-browser
+        # Cria um link simbólico para que o Chromium seja reconhecido como google-chrome
+        sudo ln -sf /snap/bin/chromium /usr/bin/google-chrome
+
+      - name: Install compatible Chromedriver
+      run: |
+        # Obtém a versão principal do Chromium instalado
+        CHROMIUM_VERSION=$(chromium-browser --version | awk '{print $2}' | cut -d'.' -f1)
+        # Busca a versão do Chromedriver compatível com o Chromium
+        CHROMEDRIVER_VERSION=$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROMIUM_VERSION)
+        # Baixa e instala o Chromedriver correto
+        wget https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
+        unzip chromedriver_linux64.zip
+        sudo mv chromedriver /usr/bin/chromedriver
+        sudo chmod +x /usr/bin/chromedriver
 
       - name: Check Chrome and Chromedriver versions
-        run: |
-          chromium-browser --version
-          chromedriver --version
+      run: |
+        # Confirma que o Chromium e o Chromedriver estão instalados e são compatíveis
+        google-chrome --version
+        chromedriver --version
+
 
       - name: Install Loconotion dependencies
         run: pip install -r loconotion/requirements.txt
