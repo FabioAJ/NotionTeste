@@ -20,27 +20,17 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: pages_repo
-      - name: Install Google Chrome
+      - name: Install Specific Chrome Version
         run: |
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo apt install -y ./google-chrome-stable_current_amd64.deb
+          # Download a specific version of Chrome (114.0.5735.90, por exemplo)
+          wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_114.0.5735.90-1_amd64.deb
+          sudo apt install -y ./google-chrome-stable_114.0.5735.90-1_amd64.deb
           google-chrome --version
 
       - name: Install Matching ChromeDriver
         run: |
-          # Detect Chrome major version
-          CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d'.' -f1,2)
-          echo "Detected Chrome version: $CHROME_VERSION"
-
-          # Fetch the matching ChromeDriver version
-          CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-          if [ -z "$CHROMEDRIVER_VERSION" ]; then
-            echo "No matching ChromeDriver found for Chrome version $CHROME_VERSION"
-            exit 1
-          fi
-
-          echo "Installing ChromeDriver version: $CHROMEDRIVER_VERSION"
-          wget -N "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
+          # Install ChromeDriver for Chrome 114
+          wget -N "https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip"
           unzip chromedriver_linux64.zip
           sudo mv chromedriver /usr/local/bin/chromedriver
           sudo chmod +x /usr/local/bin/chromedriver
